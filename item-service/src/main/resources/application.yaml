@@ -3,6 +3,9 @@ server:
 spring:
   application:
     name: item-service
+  cloud:
+    nacos:
+      server-addr: ${hm.nacos.host}:${hm.nacos.port}
   profiles:
     active: dev
   datasource:
