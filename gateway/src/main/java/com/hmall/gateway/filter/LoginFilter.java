@@ -37,14 +37,19 @@ public class LoginFilter implements GlobalFilter {
         if (authorization != null && !authorization.isEmpty()) {
             token = authorization.get(0);
         }
+        Long userId = null;
         try {
-            Long userId = jwtTool.parseToken(token);
+            userId = jwtTool.parseToken(token);
         } catch (Exception e) {
             ServerHttpResponse response = exchange.getResponse();
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return response.setComplete();
         }
-        return chain.filter(exchange);
+        String userInfo = userId.toString();
+        ServerWebExchange newExchange = exchange.mutate()
+                .request(builder -> builder.header("user-info", userInfo))
+                .build();
+        return chain.filter(newExchange);
     }
 
     private boolean isExcludePath(String path) {
